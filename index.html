@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Assistant</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 50px;
+        }
+        button {
+            font-size: 16px;
+            padding: 10px 20px;
+            margin-top: 20px;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Speak a Command</h1>
+    <button id="micButton">🎤 Click to Speak</button>
+    <div class="result" id="result">Result will appear here...</div>
+
+    <script>
+        const micButton = document.getElementById('micButton');
+        const resultElement = document.getElementById('result');
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        
+        recognition.lang = 'en-US';  // Set the language for recognition
+
+        // Function to start the speech recognition process
+        micButton.addEventListener('click', () => {
+            recognition.start();  // Start listening for speech input
+        });
+
+        // Event handler for when speech is recognized
+recognition.onresult = function(event) {
+    const transcript = event.results[0][0].transcript;  // Get the speech transcript
+    console.log("Transcript:", transcript);  // Log the transcript to the console
+    resultElement.innerHTML = `You said: ${transcript}`;
+
+    // Send the transcript to the backend Flask server
+    fetch('http://localhost:5000/process', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query: transcript }),  // Send the transcript as 'query'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok ' + response.statusText);
+        }
+        return response.json();  // Convert response to JSON
+    })
+    .then(data => {
+        console.log("Received response:", data);  // Log the response
+        resultElement.innerHTML = `Response: ${data.response}`;  // Show response on the page
+    })
+    .catch(error => {
+        resultElement.innerHTML = "Error in processing: " + error.message;  // Show error on the page
+        console.error('Error:', error);  // Log error to console
+    });
+};
+
+
+        // Handle errors with speech recognition
+        recognition.onerror = function(event) {
+            resultElement.innerHTML = `Error occurred in recognition: ${event.error}`;
+        };
+    </script>
+
+</body>
+</html>
