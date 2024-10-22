@@ -38,7 +38,7 @@ This project is a simple voice assistant built using Flask, Python, and web tech
    ```
 
 4. **Open the application in your browser**:
-   Navigate to `http://localhost:5000` (or `copy the path of the index.html file and paste it in your web browser only after running app.py file` in your web browser to access the voice assistant.
+   Navigate to `http://localhost:5000` (or `copy the path of the index.html file and paste it in your web browser only after running app.py file` ) in your web browser to access the voice assistant.
 
 ## Usage
 
