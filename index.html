@@ -9,15 +9,26 @@
             font-family: Arial, sans-serif;
             text-align: center;
             padding-top: 50px;
+            background-color: #f0f8ff; /* Light blue background */
+            color: #000080; /* Navy text color */
         }
         button {
             font-size: 16px;
             padding: 10px 20px;
             margin-top: 20px;
+            background-color: #000080; /* Navy button background */
+            color: white; /* White button text */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #4682b4; /* Light blue button background on hover */
         }
         .result {
             margin-top: 20px;
             font-size: 18px;
+            color: #000080; /* Navy text color */
         }
     </style>
 </head>
@@ -40,35 +51,34 @@
         });
 
         // Event handler for when speech is recognized
-recognition.onresult = function(event) {
-    const transcript = event.results[0][0].transcript;  // Get the speech transcript
-    console.log("Transcript:", transcript);  // Log the transcript to the console
-    resultElement.innerHTML = `You said: ${transcript}`;
+        recognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript;  // Get the speech transcript
+            console.log("Transcript:", transcript);  // Log the transcript to the console
+            resultElement.innerHTML = `You said: ${transcript}`;
 
-    // Send the transcript to the backend Flask server
-    fetch('http://localhost:5000/process', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ query: transcript }),  // Send the transcript as 'query'
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok ' + response.statusText);
-        }
-        return response.json();  // Convert response to JSON
-    })
-    .then(data => {
-        console.log("Received response:", data);  // Log the response
-        resultElement.innerHTML = `Response: ${data.response}`;  // Show response on the page
-    })
-    .catch(error => {
-        resultElement.innerHTML = "Error in processing: " + error.message;  // Show error on the page
-        console.error('Error:', error);  // Log error to console
-    });
-};
-
+            // Send the transcript to the backend Flask server
+            fetch('http://localhost:5000/process', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ query: transcript }),  // Send the transcript as 'query'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();  // Convert response to JSON
+            })
+            .then(data => {
+                console.log("Received response:", data);  // Log the response
+                resultElement.innerHTML = `Response: ${data.response}`;  // Show response on the page
+            })
+            .catch(error => {
+                resultElement.innerHTML = "Error in processing: " + error.message;  // Show error on the page
+                console.error('Error:', error);  // Log error to console
+            });
+        };
 
         // Handle errors with speech recognition
         recognition.onerror = function(event) {
